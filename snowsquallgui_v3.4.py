@@ -26,6 +26,7 @@ import warnings
 warnings.simplefilter("ignore", category=DeprecationWarning)
 import nexradaws
 from datetime import datetime
+import pandas as pd
 
 
 
@@ -590,6 +591,10 @@ class Example(QMainWindow):
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-10:-7]
                     times1.append([time1,i])
+            elif((check != 'V' or check2 != 'V') and site != 'both'):
+                for i in range(len(localfiles.success)):
+                    time1 = localfiles.success[i].filepath[-9:-6]
+                    times1.append([time1,i])
             else:
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-9:-6]
@@ -790,6 +795,8 @@ class Example(QMainWindow):
         self.axes.plot(newcoordsx,newcoordsy)
         self.axes.scatter(newcoordsx,newcoordsy,marker='X',color='black')
         print('Plot is Done')
+        df = pd.DataFrame(list(zip(coordsx,coordsy)),columns=['xcoor','ycoor'])
+        df.to_csv(date + '.csv', encoding='utf-8', index=False)
         figure.savefig(date + '.png')
         try:
             shutil.rmtree(templocation)
