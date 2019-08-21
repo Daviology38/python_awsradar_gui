@@ -8,14 +8,11 @@ Created on Sat Apr  6 17:00:30 2019
 
 import sys
 import os
-from PyQt5 import uic
-from PyQt5.QtWidgets import (QMainWindow,QInputDialog, QMessageBox, QAbstractItemView, QListWidget, QHBoxLayout,QLineEdit, QCheckBox,QGridLayout,QGroupBox, QToolButton,
-    QAction, QFileDialog, QDialog, QComboBox, QListWidgetItem, QTreeView, QListView, QFileSystemModel, QApplication, qApp, QWidget,QVBoxLayout,QLabel,QPushButton,QSizePolicy)
+from PyQt5.QtWidgets import (QMainWindow,QInputDialog, QMessageBox, QHBoxLayout,QGridLayout,QToolButton,
+    QAction, QFileDialog, QDialog, QComboBox,QApplication, qApp, QWidget,QLabel,QPushButton,QSizePolicy)
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import QDir, QRect,QTimer, Qt
 import matplotlib.figure
 import cartopy.crs as crs
-from cartopy.feature import NaturalEarthFeature
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import numpy as np
 import pyart
@@ -24,15 +21,13 @@ import shutil
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
-from matplotlib.animation import FuncAnimation, ArtistAnimation
 #suppress deprecation warnings
 import warnings
 warnings.simplefilter("ignore", category=DeprecationWarning)
-import six
 import nexradaws
-import gc
 from datetime import datetime
-import os
+
+
 
 date = ''
 content = []
@@ -69,10 +64,7 @@ with open('H:/Python/snowsqualldatesv5.txt') as f:
     for line in f:
         line = line.rstrip()
         content.append(line)
-with open('H:/Python/timessnowsquallsv5.txt') as f:
-    for line in f:
-        line = line.rstrip()
-        timess.append(line)
+
 coordsx = []
 coordsy = []
 ################################################################################
@@ -763,8 +755,10 @@ class Example(QMainWindow):
         coordsy.append(0)
         print(0)
         global ii
-        global jj        
+        global jj    
+        global filetype
         jj = 0
+        
         pass
     
 
@@ -820,10 +814,6 @@ class mycanvas(FigureCanvas):
         figure = matplotlib.figure.Figure()
         self.axes = figure.add_subplot(111,projection=crs.PlateCarree())
         self.axes.set_extent([-78, -68, 40, 45], crs.PlateCarree())
-        #ax = plt.axes(projection=crs.PlateCarree())
-        #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-        #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-        #self.axes.coastlines('50m',linewidth=0.8)
         self.axes.gridlines(color="black", linestyle="dotted")
 
 
@@ -837,115 +827,20 @@ class mycanvas(FigureCanvas):
         self.figure.canvas.mpl_connect('button_press_event', self.onclick)
         self.figure.suptitle('Radar Returns')
         self.compute_initial_figure()
-                       #select the radar site
+
 
     def compute_initial_figure(self):
-               #select the radar site
-        global localfiles
-        global localfiles2
-        global files1
-        global files2
-        global site
-        global ii
-        #site = 'KBOX'
-        #site2 = 'KENX'
-        if(site != 'both'):            
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
-            #use boto to connect to the AWS nexrad holdings directory
-            #ax = self.figure.add_subplot(111)
-                            #set up a basemap with a lambert conformal projection centered 
-            # on the radar location, extending 1 degree in the meridional direction
-            # and 1.5 degrees in the longitudinal in each direction away from the 
-            # center point.
-        else:
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
-            #use boto to connect to the AWS nexrad holdings directory
-            #ax = self.figure.add_subplot(111)
-                            #set up a basemap with a lambert conformal projection centered 
-            # on the radar location, extending 1 degree in the meridional direction
-            # and 1.5 degrees in the longitudinal in each direction away from the 
-            # center point.
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
-        try:
-            radar = pyart.io.read_nexrad_archive(files1)
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
-            #set up the plotting grid for the data
-            display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-    
-            
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-            del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
-            # and colorbar tick labels)
-            cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
-                #If the try for files says there aren't any files found, then we skip
-            self.draw()
-        except ValueError:
-            pass
+        pass
 
         
 ###############################################################################
 #Plot on the right will display frame by frame
-#Plot on the right will display a running gif image
+
 class static(mycanvas):
     def __init__(self, parent=None):
         mycanvas.__init__(self)
         global ii
-        self.j = 0
-     
+        self.j = 0    
     def onclick(self):
         pass
     
@@ -958,8 +853,6 @@ class static(mycanvas):
         global site
         global ii
         global dirname
-        #site = 'KBOX'
-        #site2 = 'KENX'
         if(site != 'both'):
             
             #get the radar location (this is used to set up the basemap and plotting grid)
@@ -974,37 +867,14 @@ class static(mycanvas):
             loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
             lon0 = loc[1] ; lat0 = loc[0]
             lon1 = loc2[1]; lat1 = loc2[0]
-            
-        #use boto to connect to the AWS nexrad holdings directory
-        #ax = self.figure.add_subplot(111)
-                        #set up a basemap with a lambert conformal projection centered 
-        # on the radar location, extending 1 degree in the meridional direction
-        # and 1.5 degrees in the longitudinal in each direction away from the 
-        # center point.
         self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
                   llcrnrlat=40,llcrnrlon=-78,
                   urcrnrlat=45,urcrnrlon=-68,resolution='l')
         
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
+
         try:
             radar = pyart.io.read_nexrad_archive(localfiles.success[0].filepath)
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
+
             #set up the plotting grid for the data
             display = pyart.graph.RadarMapDisplay(radar)
             #display2 = pyart.graph.RadarMapDisplay(radar2)
@@ -1032,14 +902,8 @@ class static(mycanvas):
             self.norm = mpl.colors.BoundaryNorm(levs,256)
             #create a colormesh of the reflectivity using with the plot settings defined above
             p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
-                #If the try for files says there aren't any files found, then we skip
+            self.figure.canvas.draw_idle()
+
         except ValueError:
             pass
 
@@ -1081,12 +945,7 @@ class static(mycanvas):
                     display = pyart.graph.RadarMapDisplay(radar)
                     #display2 = pyart.graph.RadarMapDisplay(radar2)
                     x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
             
                     
@@ -1101,16 +960,14 @@ class static(mycanvas):
                     del radar
                     #del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,axii=ax,latlon=True)
+
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
                     name =  str(ii) + '.png'
                     self.figure.savefig(dirname + '/' + name)
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
@@ -1175,7 +1032,7 @@ class static(mycanvas):
                     #add the colorbar axes and create the colorbar based on the settings above
                     name = str(ii) + '.png'
                     self.figure.savefig(dirname + '/' + name)
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
@@ -1193,15 +1050,13 @@ class static2(mycanvas):
         global jj
         self.j = 0
     def compute_initial_figure(self):
-               #select the radar site
+        #select the radar site
         global localfiles
         global localfiles2
         global files1
         global files2
         global site
         global jj
-        #site = 'KBOX'
-        #site2 = 'KENX'
         if(site != 'both'):
             
             #get the radar location (this is used to set up the basemap and plotting grid)
@@ -1215,73 +1070,166 @@ class static2(mycanvas):
             loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
             loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
             lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
+            #lon1 = loc2[1]; lat1 = loc2[0]
             
-        #use boto to connect to the AWS nexrad holdings directory
-        #ax = self.figure.add_subplot(111)
-                        #set up a basemap with a lambert conformal projection centered 
-        # on the radar location, extending 1 degree in the meridional direction
-        # and 1.5 degrees in the longitudinal in each direction away from the 
-        # center point.
         self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
                   llcrnrlat=40,llcrnrlon=-78,
                   urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
+        check = files1[jj][-6:-5]
+        check2 = files1[jj][-3:-2]        
+        if(check == 'V'):
+            timme = files1[jj][-13:-7]
+            timelabel = timme[0:6]
+            time1 = files1[jj][-13:-10]
+            #time2 = localfiles2.success[self.j].filepath[-13:-10]
+        elif(check2 == 'V'):
+            timme = files1[jj][-10:-4]
+            timelabel = timme[0:6]
+            time1 = files1[jj][-10:-7]
+        else:
+            timme = files1[jj][-9:]
+            timelabel = timme[0:6]
+            time1 = files1[jj][-9:-6]
         try:
-            radar = pyart.io.read_nexrad_archive(localfiles.success[0].filepath)
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
+            levs = np.linspace(0,80,41,endpoint=True)
+            ticks = np.linspace(0,80,9,endpoint=True)
+            #define the plot axis to the be axis defined above
+            self.norm = mpl.colors.BoundaryNorm(levs,256)
+            radar = pyart.io.read_nexrad_archive(files1[jj])   
             #set up the plotting grid for the data
             display = pyart.graph.RadarMapDisplay(radar)
             #display2 = pyart.graph.RadarMapDisplay(radar2)
             x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-            
             #get the plotting grid into lat/lon coordinates
             x0,y0 = self.m(lon0,lat0)
             #x1,y1 = self.m(lon1,lat1)
             glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
             #read in the lowest scan angle reflectivity field in the NEXRAD file 
             refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
             #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
             del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
-            # and colorbar tick labels)
             cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
             #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
+            self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
+            self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                 #If the try for files says there aren't any files found, then we skip
-            self.draw()
+            self.figure.canvas.draw_idle()
+            
+            if(site != 'both'):
+        
+                #get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location(site)
+                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1] ; lat0 = loc[0]
+                #lon1 = loc2[1]; lat1 = loc2[0]
+                #if(self.j == len(localfiles2.success)):
+                    #self.j = self.j - 1
+                check = files1[jj][-6:-5]
+                check2 = files1[jj][-3:-2]
+                if(check == 'V'):
+                    timme = files1[jj][-13:-7]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-13:-10]
+                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif(check2 == 'V'):
+                    timme = files1[jj][-10:-4]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-10:-7]
+                else:
+                    timme = files1[jj][-9:]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-9:-6]
+                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                try:
+                    radar = pyart.io.read_nexrad_archive(files1[jj])
+                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+               
+                    #set up the plotting grid for the data
+                    display = pyart.graph.RadarMapDisplay(radar)
+                    #display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x,y = display._get_x_y(0,True,None)
+                    self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
+                    self.axes.gridlines(color="black", linestyle="dotted")
+            
+                    
+                    #get the plotting grid into lat/lon coordinates
+                    x0,y0 = self.m(lon0,lat0)
+                    #x1,y1 = self.m(lon1,lat1)
+                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
+                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
+                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
+                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    #del radar2
+                    cmap = 'pyart_NWSRef'
+
+                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    #add the colorbar axes and create the colorbar based on the settings above
+                    self.figure.canvas.draw_idle()
+                except:
+                    pass
+            else:
+                        
+                #get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
+                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
+                lon0 = loc[1] ; lat0 = loc[0]
+                lon1 = loc2[1]; lat1 = loc2[0]
+                self.axes.clear()
+                #if(self.j == len(localfiles2.success)):
+                    #self.j = self.j - 1
+                check = files1[jj][-6:-5]
+                check2 = files1[jj][-3:-2]
+                if(check == 'V'):
+                    timme = files1[jj][-13:-7]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-13:-10]
+                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif(check2 == 'V'):
+                    timme = files1[jj][-10:-4]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-10:-7]
+                else:
+                    timme = files1[jj][-9:]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-9:-6]
+                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                try:
+                    radar = pyart.io.read_nexrad_archive(files1[jj])
+                    radar2 = pyart.io.read_nexrad_archive(files2[jj])
+               
+                    #set up the plotting grid for the data
+                    display = pyart.graph.RadarMapDisplay(radar)
+                    display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x,y = display._get_x_y(0,True,None)
+                    x2,y2 = display2._get_x_y(0,True,None)
+                    self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
+                    self.axes.gridlines(color="black", linestyle="dotted")
+            
+                    
+                    #get the plotting grid into lat/lon coordinates
+                    x0,y0 = self.m(lon0,lat0)
+                    x1,y1 = self.m(lon1,lat1)
+                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
+                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
+                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
+                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    del radar2
+                    cmap = 'pyart_NWSRef'
+                    #create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    self.figure.canvas.draw_idle()
+                except:
+                    pass
+                
+
         except ValueError:
             pass
 
@@ -1338,38 +1286,29 @@ class static2(mycanvas):
                     #time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
+
                     #set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     #display2 = pyart.graph.RadarMapDisplay(radar2)
                     x,y = display._get_x_y(0,True,None)
                     #x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
 
                     #get the plotting grid into lat/lon coordinates
                     x0,y0 = self.m(lon0,lat0)
                     #x1,y1 = self.m(lon1,lat1)
                     glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
                     refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
                     #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
                     #del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -1382,10 +1321,6 @@ class static2(mycanvas):
                         jj = 0
                     pass
             else:
-                        
-                    #site = 'KBOX'
-                #site2 = 'KENX'
-        
                 #get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
                 loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
@@ -1442,14 +1377,11 @@ class static2(mycanvas):
                     del radar
                     del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -1530,6 +1462,7 @@ class static2(mycanvas):
                     #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -1602,14 +1535,11 @@ class static2(mycanvas):
                     del radar
                     del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -1630,10 +1560,7 @@ class mycanvas2(FigureCanvas):
         figure = matplotlib.figure.Figure()
         self.axes = figure.add_subplot(111,projection=crs.PlateCarree())
         self.axes.set_extent([-78, -68, 40, 45], crs.PlateCarree())
-        #ax = plt.axes(projection=crs.PlateCarree())
-        #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-        #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-        #self.axes.coastlines('50m',linewidth=0.8)
+
         self.axes.gridlines(color="black", linestyle="dotted")
 
 
@@ -1650,106 +1577,11 @@ class mycanvas2(FigureCanvas):
                        #select the radar site
 
     def compute_initial_figure(self):
-               #select the radar site
-        global localfiles
-        global localfiles2
-        global files1
-        global files2
-        global site
-        global ii
-        global filedir
-        #site = 'KBOX'
-        #site2 = 'KENX'
-        if(site != 'both'):            
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
-            #use boto to connect to the AWS nexrad holdings directory
-            #ax = self.figure.add_subplot(111)
-                            #set up a basemap with a lambert conformal projection centered 
-            # on the radar location, extending 1 degree in the meridional direction
-            # and 1.5 degrees in the longitudinal in each direction away from the 
-            # center point.
-        else:
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
-            #use boto to connect to the AWS nexrad holdings directory
-            #ax = self.figure.add_subplot(111)
-                            #set up a basemap with a lambert conformal projection centered 
-            # on the radar location, extending 1 degree in the meridional direction
-            # and 1.5 degrees in the longitudinal in each direction away from the 
-            # center point.
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
-        try:
-            radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[0])
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
-            #set up the plotting grid for the data
-            display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-    
-            
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-            del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
-            # and colorbar tick labels)
-            cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
-                #If the try for files says there aren't any files found, then we skip
-        except ValueError:
-            pass
-
+        pass
         
 ###############################################################################
 #Plot on the right will display frame by frame
-#Plot on the right will display a running gif image
+
 class static12(mycanvas2):
     def __init__(self, parent=None):
         mycanvas2.__init__(self)
@@ -1794,22 +1626,7 @@ class static12(mycanvas2):
                   llcrnrlat=40,llcrnrlon=-78,
                   urcrnrlat=45,urcrnrlon=-68,resolution='l')
         
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
+
         try:
             radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[0])
             #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
@@ -1841,13 +1658,7 @@ class static12(mycanvas2):
             self.norm = mpl.colors.BoundaryNorm(levs,256)
             #create a colormesh of the reflectivity using with the plot settings defined above
             p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
+
                 #If the try for files says there aren't any files found, then we skip
         except ValueError:
             pass
@@ -1910,16 +1721,13 @@ class static12(mycanvas2):
                     del radar
                     #del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,axii=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
                     name =  str(ii) + '.png'
                     self.figure.savefig(dirname + '/' + name)
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
@@ -1929,14 +1737,12 @@ class static12(mycanvas2):
                     pass
             else:
                         
-                #get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
                 loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
                 lon0 = loc[1] ; lat0 = loc[0]
                 lon1 = loc2[1]; lat1 = loc2[0]
                 self.axes.clear()
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+
                 check = files1[ii][-6:-5]
                 check2 = files1[ii][-3:-2]
                 if(check == 'V'):
@@ -1984,7 +1790,7 @@ class static12(mycanvas2):
                     #add the colorbar axes and create the colorbar based on the settings above
                     name = str(ii) + '.png'
                     self.figure.savefig(dirname + '/' + name)
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
@@ -2040,21 +1846,7 @@ class static22(mycanvas2):
                   llcrnrlat=40,llcrnrlon=-78,
                   urcrnrlat=45,urcrnrlon=-68,resolution='l')
         
-        #add geographic boundaries and lat/lon labels
-        #self.m.drawparallels(np.arange(20,70,0.5),labels=[1,0,0,0],fontsize=12,
-                        #color='k',ax=ax,linewidth=0.001)
-        #self.m.drawmeridians(np.arange(-150,-50,1),labels=[0,0,1,0],fontsize=12,
-                       #color='k',ax=ax,linewidth=0.001)
-        #m.drawcounties(linewidth=0.5,color='gray',ax=ax)
-        #self.m.drawstates(linewidth=1.5,color='k',ax=ax)
-        #self.m.drawcoastlines(linewidth=1.5,color='k',ax=ax)
-        #Use Nasa Blue marble Earth for background if you want
-        #m.bluemarble()
-        #m.shadedrelief()
-        #mark the radar location with a black dot
-        #m.scatter(lon0,lat0,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #m.scatter(lon1,lat1,marker='o',s=20,color='k',ax=ax,latlon=True)
-        #normalize the colormap based on the levels provided above                    
+           
         #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
         try:
             radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[0])
@@ -2086,14 +1878,121 @@ class static22(mycanvas2):
             self.norm = mpl.colors.BoundaryNorm(levs,256)
             #create a colormesh of the reflectivity using with the plot settings defined above
             p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            #add the colorbar axes and create the colorbar based on the settings above
-            #cax = figure.add_axes([0.075,0.075,0.85,0.025])
-            #cbar = plt.colorbar(p1,ticks=ticks,norm=self.norm,cax=cax,orientation='horizontal')
-            #cbar.set_label(label,fontsize=12)
-            #cbar.ax.tick_params(labelsize=11)
-            #display the figurefrom matplotlib.animation import FuncAnimation
-                #If the try for files says there aren't any files found, then we skip
+            if(site != 'both'):
+        
+                #get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location(site)
+                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1] ; lat0 = loc[0]
+                #lon1 = loc2[1]; lat1 = loc2[0]
+                #if(self.j == len(localfiles2.success)):
+                    #self.j = self.j - 1
+                check = files1[jj][-6:-5]
+                check2 = files1[jj][-3:-2]
+                if(check == 'V'):
+                    timme = files1[jj][-13:-7]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-13:-10]
+                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif(check2 == 'V'):
+                    timme = files1[jj][-10:-4]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-10:-7]
+                else:
+                    timme = files1[jj][-9:]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-9:-6]
+                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                try:
+                    radar = pyart.io.read_nexrad_archive(files1[jj])
+                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+               
+                    #set up the plotting grid for the data
+                    display = pyart.graph.RadarMapDisplay(radar)
+                    #display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x,y = display._get_x_y(0,True,None)
+                    self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
+                    self.axes.gridlines(color="black", linestyle="dotted")
+            
+                    
+                    #get the plotting grid into lat/lon coordinates
+                    x0,y0 = self.m(lon0,lat0)
+                    #x1,y1 = self.m(lon1,lat1)
+                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
+                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
+                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
+                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    #del radar2
+                    cmap = 'pyart_NWSRef'
+
+                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    #add the colorbar axes and create the colorbar based on the settings above
+                    self.figure.canvas.draw_idle()
+                except:
+                    pass
+            else:
+                        
+                #get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
+                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
+                lon0 = loc[1] ; lat0 = loc[0]
+                lon1 = loc2[1]; lat1 = loc2[0]
+                self.axes.clear()
+                #if(self.j == len(localfiles2.success)):
+                    #self.j = self.j - 1
+                check = files1[jj][-6:-5]
+                check2 = files1[jj][-3:-2]
+                if(check == 'V'):
+                    timme = files1[jj][-13:-7]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-13:-10]
+                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif(check2 == 'V'):
+                    timme = files1[jj][-10:-4]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-10:-7]
+                else:
+                    timme = files1[jj][-9:]
+                    timelabel = timme[0:6]
+                    time1 = files1[jj][-9:-6]
+                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                try:
+                    radar = pyart.io.read_nexrad_archive(files1[jj])
+                    radar2 = pyart.io.read_nexrad_archive(files2[jj])
+               
+                    #set up the plotting grid for the data
+                    display = pyart.graph.RadarMapDisplay(radar)
+                    display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x,y = display._get_x_y(0,True,None)
+                    x2,y2 = display2._get_x_y(0,True,None)
+                    self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
+                    self.axes.gridlines(color="black", linestyle="dotted")
+            
+                    
+                    #get the plotting grid into lat/lon coordinates
+                    x0,y0 = self.m(lon0,lat0)
+                    x1,y1 = self.m(lon1,lat1)
+                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
+                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
+                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
+                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    del radar2
+                    cmap = 'pyart_NWSRef'
+                    #create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    self.figure.canvas.draw_idle()
+                except:
+                    pass
+                
+
         except ValueError:
             pass
 
@@ -2162,10 +2061,7 @@ class static22(mycanvas2):
                     x,y = display._get_x_y(0,True,None)
                     #x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+
                     self.axes.gridlines(color="black", linestyle="dotted")
 
                     #get the plotting grid into lat/lon coordinates
@@ -2179,14 +2075,11 @@ class static22(mycanvas2):
                     del radar
                     #del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -2259,14 +2152,12 @@ class static22(mycanvas2):
                     del radar
                     del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
+
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -2296,15 +2187,14 @@ class static22(mycanvas2):
                 self.j = self.j + 1
                 if(jj == len(files1)):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
                 if(check == 'V'):
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
+
                 elif(check2 == 'V'):
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
@@ -2313,42 +2203,28 @@ class static22(mycanvas2):
                     timme = files1[jj][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+
                 try:
                     radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
                
                     #set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
                     x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
 
                     #get the plotting grid into lat/lon coordinates
                     x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
                     glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
                     #read in the lowest scan angle reflectivity field in the NEXRAD file 
                     refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
                     #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
                     #del radar2
                     cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
                     p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
@@ -2361,10 +2237,6 @@ class static22(mycanvas2):
                         jj = 0
                     pass
             else:
-                        
-                    #site = 'KBOX'
-                #site2 = 'KENX'
-        
                 #get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
                 loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
@@ -2375,15 +2247,12 @@ class static22(mycanvas2):
                 self.j = self.j + 1
                 if(jj == len(files1)):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
                 if(check == 'V'):
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
                 elif(check2 == 'V'):
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
@@ -2392,7 +2261,6 @@ class static22(mycanvas2):
                     timme = files1[jj][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
                     radar2 = pyart.io.read_nexrad_archive(filedir2 + '/' + files2[jj])
@@ -2403,13 +2271,7 @@ class static22(mycanvas2):
                     x,y = display._get_x_y(0,True,None)
                     x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
                     #get the plotting grid into lat/lon coordinates
                     x0,y0 = self.m(lon0,lat0)
                     x1,y1 = self.m(lon1,lat1)
@@ -2428,7 +2290,7 @@ class static22(mycanvas2):
                     self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
                     self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
                     #add the colorbar axes and create the colorbar based on the settings above
-                    self.draw()
+                    self.figure.canvas.draw_idle()
                     if(jj == len(files1)-1):
                         jj = 0
                 except ValueError:
