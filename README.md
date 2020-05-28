@@ -1,7 +1,7 @@
 # python_awsradar_gui
 This project uses the nexrad aws api and py-ART libraries incorporated into a pyqt-5 gui to pull radar data from selected stations (in this case KBOX or KENX) for selected dates for snow squall cases from 1999-2018 across the Northeast U.S. 
 
-# How to use GUI Option
+# GUI Option
 ## Choosing the Data
 The gui initializes with a choice for date, start time, end time, and radar site (in that order). Some dates are missing radar files from some of the radar sites, so if the 'both' option is chosen, only times available at both radar sites within the time range chosen will be used.
 
