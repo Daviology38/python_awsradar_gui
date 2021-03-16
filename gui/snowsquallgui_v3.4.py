@@ -8,8 +8,24 @@ Created on Sat Apr  6 17:00:30 2019
 
 import sys
 import os
-from PyQt5.QtWidgets import (QMainWindow,QInputDialog, QMessageBox, QHBoxLayout,QGridLayout,QToolButton,
-    QAction, QFileDialog, QDialog, QComboBox,QApplication, qApp, QWidget,QLabel,QPushButton,QSizePolicy)
+from PyQt5.QtWidgets import (
+    QMainWindow,
+    QInputDialog,
+    QMessageBox,
+    QHBoxLayout,
+    QGridLayout,
+    QToolButton,
+    QAction,
+    QFileDialog,
+    QDialog,
+    QComboBox,
+    QApplication,
+    qApp,
+    QWidget,
+    QLabel,
+    QPushButton,
+    QSizePolicy,
+)
 from PyQt5.QtGui import QIcon, QPixmap
 import matplotlib.figure
 import cartopy.crs as crs
@@ -21,16 +37,17 @@ import shutil
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
-#suppress deprecation warnings
+
+# suppress deprecation warnings
 import warnings
+
 warnings.simplefilter("ignore", category=DeprecationWarning)
 import nexradaws
 from datetime import datetime
 import pandas as pd
 
 
-
-date = ''
+date = ""
 content = []
 timess = []
 counter = 1
@@ -47,7 +64,7 @@ global testing
 global overallcoords
 global endtime
 global site
-global ii 
+global ii
 global dirname
 global imagenumber
 global jj
@@ -61,7 +78,7 @@ ii = 0
 imagenumber = 0
 files1 = []
 files2 = []
-with open('H:/Python/snowsqualldatesv5.txt') as f:
+with open("H:/Python/snowsqualldatesv5.txt") as f:
     for line in f:
         line = line.rstrip()
         content.append(line)
@@ -75,21 +92,23 @@ class Test(QDialog):
         self.setWindowTitle("Choose date")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        #Change to location of the snowsqualldatesv5.txt file
-        with open('H:/Python/snowsqualldatesv5.txt','r') as movieDir:
+        # Change to location of the snowsqualldatesv5.txt file
+        with open("H:/Python/snowsqualldatesv5.txt", "r") as movieDir:
             for movie in movieDir:
                 self.cb.addItem(movie)
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
-        
+
     def onActivated(self, text):
         global date
         date = text
         date = int(date)
         date = str(date).rstrip()
         self.accept()
+
+
 ###############################################################################
 class Timeteststart(QDialog):
     def __init__(self, parent=None):
@@ -97,40 +116,42 @@ class Timeteststart(QDialog):
         self.setWindowTitle("Choose start time")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        self.cb.addItem('0')
-        self.cb.addItem('1')
-        self.cb.addItem('2')
-        self.cb.addItem('3')
-        self.cb.addItem('4')
-        self.cb.addItem('5')
-        self.cb.addItem('6')
-        self.cb.addItem('7')
-        self.cb.addItem('8')
-        self.cb.addItem('9')
-        self.cb.addItem('10')
-        self.cb.addItem('11')
-        self.cb.addItem('12')
-        self.cb.addItem('13')
-        self.cb.addItem('14')
-        self.cb.addItem('15')
-        self.cb.addItem('16')
-        self.cb.addItem('17')
-        self.cb.addItem('18')
-        self.cb.addItem('19')
-        self.cb.addItem('20')
-        self.cb.addItem('21')
-        self.cb.addItem('22')
-        self.cb.addItem('23')
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        self.cb.addItem("0")
+        self.cb.addItem("1")
+        self.cb.addItem("2")
+        self.cb.addItem("3")
+        self.cb.addItem("4")
+        self.cb.addItem("5")
+        self.cb.addItem("6")
+        self.cb.addItem("7")
+        self.cb.addItem("8")
+        self.cb.addItem("9")
+        self.cb.addItem("10")
+        self.cb.addItem("11")
+        self.cb.addItem("12")
+        self.cb.addItem("13")
+        self.cb.addItem("14")
+        self.cb.addItem("15")
+        self.cb.addItem("16")
+        self.cb.addItem("17")
+        self.cb.addItem("18")
+        self.cb.addItem("19")
+        self.cb.addItem("20")
+        self.cb.addItem("21")
+        self.cb.addItem("22")
+        self.cb.addItem("23")
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
-        
+
     def onActivated(self, text):
         global starttime
         starttime = text
         starttime = str(starttime).rstrip()
-        self.accept()        
+        self.accept()
+
+
 ################################################################################
 class Timetestend(QDialog):
     def __init__(self, parent=None):
@@ -138,94 +159,102 @@ class Timetestend(QDialog):
         self.setWindowTitle("Choose end time")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        self.cb.addItem('0')
-        self.cb.addItem('1')
-        self.cb.addItem('2')
-        self.cb.addItem('3')
-        self.cb.addItem('4')
-        self.cb.addItem('5')
-        self.cb.addItem('6')
-        self.cb.addItem('7')
-        self.cb.addItem('8')
-        self.cb.addItem('9')
-        self.cb.addItem('10')
-        self.cb.addItem('11')
-        self.cb.addItem('12')
-        self.cb.addItem('13')
-        self.cb.addItem('14')
-        self.cb.addItem('15')
-        self.cb.addItem('16')
-        self.cb.addItem('17')
-        self.cb.addItem('18')
-        self.cb.addItem('19')
-        self.cb.addItem('20')
-        self.cb.addItem('21')
-        self.cb.addItem('22')
-        self.cb.addItem('23')
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        self.cb.addItem("0")
+        self.cb.addItem("1")
+        self.cb.addItem("2")
+        self.cb.addItem("3")
+        self.cb.addItem("4")
+        self.cb.addItem("5")
+        self.cb.addItem("6")
+        self.cb.addItem("7")
+        self.cb.addItem("8")
+        self.cb.addItem("9")
+        self.cb.addItem("10")
+        self.cb.addItem("11")
+        self.cb.addItem("12")
+        self.cb.addItem("13")
+        self.cb.addItem("14")
+        self.cb.addItem("15")
+        self.cb.addItem("16")
+        self.cb.addItem("17")
+        self.cb.addItem("18")
+        self.cb.addItem("19")
+        self.cb.addItem("20")
+        self.cb.addItem("21")
+        self.cb.addItem("22")
+        self.cb.addItem("23")
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
-        
+
     def onActivated(self, text):
         global endtime
         endtime = text
         endtime = str(endtime).rstrip()
-        self.accept()   
+        self.accept()
+
+
 ################################################################################
 class choosetype(QDialog):
-     def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(choosetype, self).__init__(parent)
         self.setWindowTitle("Choose Type")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        self.cb.addItem('Local')
-        self.cb.addItem('Download')
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        self.cb.addItem("Local")
+        self.cb.addItem("Download")
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
-       
-     def onActivated(self, text):
+
+    def onActivated(self, text):
         global filetype
         filetype = text
         filetype = str(filetype).rstrip()
-        self.accept()    
+        self.accept()
+
+
 ################################################################################
 class yesno(QDialog):
-     def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(yesno, self).__init__(parent)
         self.setWindowTitle("Are You Using More Than One Site?")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        self.cb.addItem('Yes')
-        self.cb.addItem('No')
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        self.cb.addItem("Yes")
+        self.cb.addItem("No")
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
-       
-     def onActivated(self, text):
+
+    def onActivated(self, text):
         global select
         select = text
         select = str(select).rstrip()
-        self.accept()    
+        self.accept()
+
+
 ################################################################################
 class choosefiles(QDialog):
-     def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(choosefiles, self).__init__(parent)
         global filedir
         filedir = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        self.accept()          
+        self.accept()
+
 
 ################################################################################
 class choosefiles2(QDialog):
-     def __init__(self, parent=None):
+    def __init__(self, parent=None):
         super(choosefiles2, self).__init__(parent)
         global filedir2
         filedir2 = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-        self.accept()         
-        
+        self.accept()
+
+
 ################################################################################
 class RadarSite(QDialog):
     def __init__(self, parent=None):
@@ -233,10 +262,10 @@ class RadarSite(QDialog):
         self.setWindowTitle("Choose Radar Site")
         self.layout = QHBoxLayout()
         self.cb = QComboBox()
-        self.cb.addItem('KENX')
-        self.cb.addItem('KBOX')
-        self.cb.addItem('both')
-        #self.listWidget.itemClicked.connect(self.printItemText)
+        self.cb.addItem("KENX")
+        self.cb.addItem("KBOX")
+        self.cb.addItem("both")
+        # self.listWidget.itemClicked.connect(self.printItemText)
         self.layout.addWidget(self.cb)
         self.setLayout(self.layout)
         self.cb.activated[str].connect(self.onActivated)
@@ -245,16 +274,16 @@ class RadarSite(QDialog):
         global site
         site = text
         site = str(site).rstrip()
-        self.accept()   
+        self.accept()
+
 
 ############################
 
-#Main Window
+# Main Window
 class Example(QMainWindow):
-    
-    def __init__(self, parent = None):
-        super(Example,self).__init__()
-        self.title = 'Radar Analysis'
+    def __init__(self, parent=None):
+        super(Example, self).__init__()
+        self.title = "Radar Analysis"
         self.left = 30
         self.top = 30
         self.width = 640
@@ -262,20 +291,26 @@ class Example(QMainWindow):
         self.dialog = choosetype(self)
         som = self.dialog.exec()
         if som == QDialog.Accepted:
-            
+
             global filetype
 
-            if (filetype == 'Local'):      
+            if filetype == "Local":
                 global filedir
                 global usrdir
-                filedir = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+                filedir = str(
+                    QFileDialog.getExistingDirectory(self, "Select Directory")
+                )
                 self.dialog8 = yesno(self)
                 som3 = self.dialog8.exec()
                 global select
-                if(select == 'Yes'):
+                if select == "Yes":
                     global filedir2
-                    filedir2 = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
-                text, ok = QInputDialog.getText(self, 'Input Dialog', 'Enter date (mmddyyyy):')
+                    filedir2 = str(
+                        QFileDialog.getExistingDirectory(self, "Select Directory")
+                    )
+                text, ok = QInputDialog.getText(
+                    self, "Input Dialog", "Enter date (mmddyyyy):"
+                )
                 if ok:
                     global usrdir
                     usrdir = str(text)
@@ -293,10 +328,10 @@ class Example(QMainWindow):
                             if self.dialog5.exec_():
                                 self.initUI()
 
-    def initUI2(self):               
-        print('Here')
+    def initUI2(self):
+        print("Here")
         #############################################################
-        #get the data
+        # get the data
         global date
         global starttime
         global endtime
@@ -315,10 +350,11 @@ class Example(QMainWindow):
         filenames = os.listdir(filedir)
         date = usrdir
         testing = len(filenames)
-        #Organize the files to get one for each 3 digit time for each station
+        # Organize the files to get one for each 3 digit time for each station
         check = filenames[0][-6:-5]
         times1 = []
         times2 = []
+
         def remove(duplicate):
             final_list = []
             found = set([])
@@ -330,40 +366,41 @@ class Example(QMainWindow):
                         lst.append(element)
                 final_list.append(lst)
             return final_list
-        #Check to see if we are using one station or two stations
-        if(check == 'V' and site == 'both'):
+
+        # Check to see if we are using one station or two stations
+        if check == "V" and site == "both":
             filenames2 = os.listdir(filedir2)
             for i in range(len(filenames)):
                 time1 = filenames[i][-13:-10]
-                times1.append([time1,i])
+                times1.append([time1, i])
             for j in range(len(filenames2)):
                 time2 = filenames2[j][-13:-10]
-                times2.append([time2,j])
-            #time2 = localfiles2.success[self.j].filepath[-13:-10]
-        elif(check == 'V' and site != 'both'):
+                times2.append([time2, j])
+            # time2 = localfiles2.success[self.j].filepath[-13:-10]
+        elif check == "V" and site != "both":
             for i in range(len(filenames)):
                 time1 = filenames[i][-13:-10]
-                times1.append([time1,i])
-        elif(check != 'V' and site == 'both'):
+                times1.append([time1, i])
+        elif check != "V" and site == "both":
             filenames2 = os.listdir(filedir2)
             for i in range(len(filenames)):
                 time1 = filenames[i][-6:-3]
-                times1.append([time1,i])
+                times1.append([time1, i])
             for j in range(len(filenames2)):
                 time2 = filenames2[-6:-3]
-                times2.append([time2,j])
+                times2.append([time2, j])
         else:
             for i in range(len(filenames)):
                 time1 = filenames[i][-6:-3]
-                times1.append([time1,i])
-        #Find similar values in the array(s) and remove them
-        if(site == 'both'):
+                times1.append([time1, i])
+        # Find similar values in the array(s) and remove them
+        if site == "both":
             temp1 = remove(times1)
             temp2 = remove(times2)
         else:
             temp1 = remove(times1)
-        #Now if there is more than 1 array, organize so both arrays have the same time scales
-        if(site == 'both'):
+        # Now if there is more than 1 array, organize so both arrays have the same time scales
+        if site == "both":
             tlist1 = []
             tlist2 = []
             for i in range(len(temp1)):
@@ -375,13 +412,13 @@ class Example(QMainWindow):
             index2 = []
             for value in svalue:
                 try:
-                    ind = tlist1.index(value)    
+                    ind = tlist1.index(value)
                     index1.append(temp1[ind][1])
                 except:
                     pass
             for value in svalue:
                 try:
-                    ind = tlist2.index(value)    
+                    ind = tlist2.index(value)
                     index2.append(temp2[ind][1])
                 except:
                     pass
@@ -399,7 +436,7 @@ class Example(QMainWindow):
             index2 = []
             for value in svalue:
                 try:
-                    ind = tlist1.index(value)    
+                    ind = tlist1.index(value)
                     index1.append(temp1[ind][1])
                 except:
                     pass
@@ -407,94 +444,92 @@ class Example(QMainWindow):
             for i in range(len(index1)):
                 nfile = filenames[index1[i]]
                 files1.append(nfile)
-        if(site == 'both'):
+        if site == "both":
             files1, files2 = (list(t) for t in zip(*sorted(zip(files1, files2))))
             static12(self)
         else:
             files1.sort()
             static12(self)
-            
-        #Add in a menu bar
+
+        # Add in a menu bar
         self.statusBar()
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        newAct = QAction('New', self)   
-        saveAct = QAction('Save', self)
+        fileMenu = menubar.addMenu("&File")
+        newAct = QAction("New", self)
+        saveAct = QAction("Save", self)
         saveAct.setShortcut("Ctrl+S")
-        #openFile = QAction(QIcon('open.png'), 'Open', self)
-        #openFile.setShortcut('Ctrl+O')
-        #openFile.setStatusTip('Open new File')
-        #openFile.triggered.connect(self.opendatafile)       
-        exitAct = QAction(QIcon('exit.png'), '&Exit', self)        
-        exitAct.setShortcut('Ctrl+Q')
-        exitAct.setStatusTip('Exit application')
+        # openFile = QAction(QIcon('open.png'), 'Open', self)
+        # openFile.setShortcut('Ctrl+O')
+        # openFile.setStatusTip('Open new File')
+        # openFile.triggered.connect(self.opendatafile)
+        exitAct = QAction(QIcon("exit.png"), "&Exit", self)
+        exitAct.setShortcut("Ctrl+Q")
+        exitAct.setStatusTip("Exit application")
         exitAct.triggered.connect(qApp.quit)
         fileMenu.addAction(newAct)
-        #fileMenu.addAction(openFile)
+        # fileMenu.addAction(openFile)
         fileMenu.addAction(saveAct)
         fileMenu.addAction(exitAct)
-        self.clearAct = QAction(QIcon('wedb.png'), 'Clear', self)
-        #self.clearAct.triggered.connect(self.clearpic)
+        self.clearAct = QAction(QIcon("wedb.png"), "Clear", self)
+        # self.clearAct.triggered.connect(self.clearpic)
         menubar.addAction(self.clearAct)
-        #Add in a grid layout
+        # Add in a grid layout
         self._main = QWidget()
         self.setCentralWidget(self._main)
         grid = QGridLayout(self._main)
         #############################################################
-        #Add in the second plot
+        # Add in the second plot
         sc2 = static22(self._main)
-        grid.addWidget(sc2, 1, 3,1,2)
+        grid.addWidget(sc2, 1, 3, 1, 2)
         ##############################################################
         #############################################################
-        #Add in image slider
-
+        # Add in image slider
 
         self.label = QLabel(self)
-        global imagenumber 
+        global imagenumber
         directory = dirname
         imagelist = os.listdir(directory)
-        imagelist.sort(key=lambda fname: int(fname.split('.')[0]))
-        pixmap = QPixmap(directory + '/' + imagelist[imagenumber])
+        imagelist.sort(key=lambda fname: int(fname.split(".")[0]))
+        pixmap = QPixmap(directory + "/" + imagelist[imagenumber])
         self.label.setPixmap(pixmap)
-        #self.resize(pixmap.width(), pixmap.height())            
-        grid.addWidget(self.label,1,1,1,2)
-        #self.resize(pixmap.width() + 500, pixmap.height())
-        pybutton = QPushButton('->', self)
-        pybutton.resize(100,32)      
+        # self.resize(pixmap.width(), pixmap.height())
+        grid.addWidget(self.label, 1, 1, 1, 2)
+        # self.resize(pixmap.width() + 500, pixmap.height())
+        pybutton = QPushButton("->", self)
+        pybutton.resize(100, 32)
         pybutton.clicked.connect(self.keyPressEvent)
-        grid.addWidget(pybutton,2,2,1,1)
-        pybutton2 = QPushButton('<-', self)
-        pybutton2.resize(100,32)      
+        grid.addWidget(pybutton, 2, 2, 1, 1)
+        pybutton2 = QPushButton("<-", self)
+        pybutton2.resize(100, 32)
         pybutton2.clicked.connect(self.keyPressEvent2)
-        grid.addWidget(pybutton2,2,1,1,1)
+        grid.addWidget(pybutton2, 2, 1, 1, 1)
         #############################################################
-        #Add in a Toolbar
-        plotradar = QAction(QIcon('exit24.png'), 'Plot View', self)
+        # Add in a Toolbar
+        plotradar = QAction(QIcon("exit24.png"), "Plot View", self)
         plotradar = QToolButton()
         plotradar.setText("Plot Cells")
         plotradar.pressed.connect(self.plotcells)
         crosssectionAct = QToolButton()
         crosssectionAct.pressed.connect(self.plotpoints)
         crosssectionAct.setText("Choose new cell")
-        self.toolbar = self.addToolBar('Plot View')
+        self.toolbar = self.addToolBar("Plot View")
         self.toolbar.addWidget(plotradar)
         self.toolbar.addWidget(crosssectionAct)
         #############################################################
-        
+
         self.setGeometry(200, 300, 1000, 500)
-        self.setWindowTitle('Simple menu')  
+        self.setWindowTitle("Simple menu")
         self.show()
 
-    
-    def initUI(self):               
+    def initUI(self):
 
         #############################################################
-        #get the data
+        # get the data
         global date
         global starttime
         global endtime
-        
-        if( date != ''):
+
+        if date != "":
             global content
             global timess
             global localfiles
@@ -513,49 +548,56 @@ class Example(QMainWindow):
             day = content[index][6:8]
             hourstart = int(starttime)
             hourend = int(endtime)
-            
-            #Open a temp directory to house the radar files and then delete when done plotting
+
+            # Open a temp directory to house the radar files and then delete when done plotting
             temp_dir = tempfile.mkdtemp()
             templocation = temp_dir
             self.conn = nexradaws.NexradAwsInterface()
-            #Put radar site here
+            # Put radar site here
             self.radarid = site
-            #self.radarid2 = 'KENX'
-            #Put the times you want the radar for here (yyyy,mm,dd,hh,mm)
+            # self.radarid2 = 'KENX'
+            # Put the times you want the radar for here (yyyy,mm,dd,hh,mm)
             dayst = day
             dayend = day
-            self.start = datetime(int(year),int(month),int(dayst),int(hourstart),0)
-            self.end = datetime(int(year),int(month),int(dayend),int(hourend),59)
+            self.start = datetime(int(year), int(month), int(dayst), int(hourstart), 0)
+            self.end = datetime(int(year), int(month), int(dayend), int(hourend), 59)
             try:
-                os.mkdir(year+month+dayst)
+                os.mkdir(year + month + dayst)
             except:
                 pass
             dirname = year + month + dayst
-            #See if the files exist on the server and if so, do this
+            # See if the files exist on the server and if so, do this
             try:
-                if(site == 'both'):
-                    self.radarid = 'KBOX'
-                    self.radarid2 = 'KENX'
-                    self.scans = self.conn.get_avail_scans_in_range(self.start, self.end, self.radarid)
-                    self.scans2 = self.conn.get_avail_scans_in_range(self.start, self.end, self.radarid2)
-                    localfiles = self.conn.download(self.scans[0:],templocation)
-                    localfiles2 = self.conn.download(self.scans2[0:],templocation)
+                if site == "both":
+                    self.radarid = "KBOX"
+                    self.radarid2 = "KENX"
+                    self.scans = self.conn.get_avail_scans_in_range(
+                        self.start, self.end, self.radarid
+                    )
+                    self.scans2 = self.conn.get_avail_scans_in_range(
+                        self.start, self.end, self.radarid2
+                    )
+                    localfiles = self.conn.download(self.scans[0:], templocation)
+                    localfiles2 = self.conn.download(self.scans2[0:], templocation)
                 else:
-                    self.scans = self.conn.get_avail_scans_in_range(self.start, self.end, self.radarid)
-                    #self.scans2 = self.conn.get_avail_scans_in_range(self.start, self.end, self.radarid2)
-                    localfiles = self.conn.download(self.scans[0:],templocation)
-                    #localfiles2 = self.conn.download(self.scans2[0:],templocation)
-                    #See if the files aren't empty and do this
-            #If the try for the files says there are NoneType files found, then we skip
+                    self.scans = self.conn.get_avail_scans_in_range(
+                        self.start, self.end, self.radarid
+                    )
+                    # self.scans2 = self.conn.get_avail_scans_in_range(self.start, self.end, self.radarid2)
+                    localfiles = self.conn.download(self.scans[0:], templocation)
+                    # localfiles2 = self.conn.download(self.scans2[0:],templocation)
+                    # See if the files aren't empty and do this
+            # If the try for the files says there are NoneType files found, then we skip
             except TypeError:
-                QMessageBox.about(self,"Warning", "Type Error, try new date!")
+                QMessageBox.about(self, "Warning", "Type Error, try new date!")
                 sys.exit(0)
             testing = len(localfiles.success)
-            #Organize the files to get one for each 3 digit time for each station
+            # Organize the files to get one for each 3 digit time for each station
             check = localfiles.success[0].filepath[-6:-5]
             check2 = localfiles.success[0].filepath[-3:-2]
             times1 = []
             times2 = []
+
             def remove(duplicate):
                 final_list = []
                 found = set([])
@@ -567,49 +609,50 @@ class Example(QMainWindow):
                             lst.append(element)
                     final_list.append(lst)
                 return final_list
-            #Check to see if we are using one station or two stations
-            if(check == 'V' and site == 'both'):
+
+            # Check to see if we are using one station or two stations
+            if check == "V" and site == "both":
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-13:-10]
-                    times1.append([time1,i])
+                    times1.append([time1, i])
                 for j in range(len(localfiles2.success)):
                     time2 = localfiles2.success[j].filepath[-13:-10]
-                    times2.append([time2,j])
-            elif(check2 == 'V' and site =='both'):
+                    times2.append([time2, j])
+            elif check2 == "V" and site == "both":
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-10:-7]
-                    times1.append([time1,i])
+                    times1.append([time1, i])
                 for j in range(len(localfiles2.success)):
                     time2 = localfiles2.success[j].filepath[-10:-7]
-                    times2.append([time2,j])    
-                #time2 = localfiles2.success[self.j].filepath[-13:-10]
-            elif(check == 'V' and site != 'both'):
+                    times2.append([time2, j])
+                # time2 = localfiles2.success[self.j].filepath[-13:-10]
+            elif check == "V" and site != "both":
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-13:-10]
-                    times1.append([time1,i])
-            elif(check2 == 'V' and site != 'both'):
+                    times1.append([time1, i])
+            elif check2 == "V" and site != "both":
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-10:-7]
-                    times1.append([time1,i])
-            elif((check != 'V' or check2 != 'V') and site != 'both'):
+                    times1.append([time1, i])
+            elif (check != "V" or check2 != "V") and site != "both":
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-9:-6]
-                    times1.append([time1,i])
+                    times1.append([time1, i])
             else:
                 for i in range(len(localfiles.success)):
                     time1 = localfiles.success[i].filepath[-9:-6]
-                    times1.append([time1,i])
+                    times1.append([time1, i])
                 for j in range(len(localfiles2.success)):
                     time2 = localfiles2.success[j].filepath[-9:-6]
-                    times2.append([time2,j])    
-            #Find similar values in the array(s) and remove them
-            if(site == 'both'):
+                    times2.append([time2, j])
+            # Find similar values in the array(s) and remove them
+            if site == "both":
                 temp1 = remove(times1)
                 temp2 = remove(times2)
             else:
                 temp1 = remove(times1)
-            #Now if there is more than 1 array, organize so both arrays have the same time scales
-            if(site == 'both'):
+            # Now if there is more than 1 array, organize so both arrays have the same time scales
+            if site == "both":
                 tlist1 = []
                 tlist2 = []
                 for i in range(len(temp1)):
@@ -621,13 +664,13 @@ class Example(QMainWindow):
                 index2 = []
                 for value in svalue:
                     try:
-                        ind = tlist1.index(value)    
+                        ind = tlist1.index(value)
                         index1.append(temp1[ind][1])
                     except:
                         pass
                 for value in svalue:
                     try:
-                        ind = tlist2.index(value)    
+                        ind = tlist2.index(value)
                         index2.append(temp2[ind][1])
                     except:
                         pass
@@ -644,115 +687,115 @@ class Example(QMainWindow):
                         files1.append(nfile)
                     except:
                         pass
-            if(site == 'both'):
+            if site == "both":
                 files1, files2 = (list(t) for t in zip(*sorted(zip(files1, files2))))
                 static(self)
             else:
                 files1.sort()
                 static(self)
-                
-            #Add in a menu bar
+
+            # Add in a menu bar
             self.statusBar()
             menubar = self.menuBar()
-            fileMenu = menubar.addMenu('&File')
-            newAct = QAction('New', self)   
-            saveAct = QAction('Save', self)
+            fileMenu = menubar.addMenu("&File")
+            newAct = QAction("New", self)
+            saveAct = QAction("Save", self)
             saveAct.setShortcut("Ctrl+S")
-            #openFile = QAction(QIcon('open.png'), 'Open', self)
-            #openFile.setShortcut('Ctrl+O')
-            #openFile.setStatusTip('Open new File')
-            #openFile.triggered.connect(self.opendatafile)       
-            exitAct = QAction(QIcon('exit.png'), '&Exit', self)        
-            exitAct.setShortcut('Ctrl+Q')
-            exitAct.setStatusTip('Exit application')
+            # openFile = QAction(QIcon('open.png'), 'Open', self)
+            # openFile.setShortcut('Ctrl+O')
+            # openFile.setStatusTip('Open new File')
+            # openFile.triggered.connect(self.opendatafile)
+            exitAct = QAction(QIcon("exit.png"), "&Exit", self)
+            exitAct.setShortcut("Ctrl+Q")
+            exitAct.setStatusTip("Exit application")
             exitAct.triggered.connect(qApp.quit)
             fileMenu.addAction(newAct)
-            #fileMenu.addAction(openFile)
+            # fileMenu.addAction(openFile)
             fileMenu.addAction(saveAct)
             fileMenu.addAction(exitAct)
-            self.clearAct = QAction(QIcon('wedb.png'), 'Clear', self)
-            #self.clearAct.triggered.connect(self.clearpic)
+            self.clearAct = QAction(QIcon("wedb.png"), "Clear", self)
+            # self.clearAct.triggered.connect(self.clearpic)
             menubar.addAction(self.clearAct)
-            #Add in a grid layout
+            # Add in a grid layout
             self._main = QWidget()
             self.setCentralWidget(self._main)
             grid = QGridLayout(self._main)
             #############################################################
-            #Add in the second plot
+            # Add in the second plot
             sc2 = static2(self._main)
-            grid.addWidget(sc2, 1, 3,1,2)
+            grid.addWidget(sc2, 1, 3, 1, 2)
             ##############################################################
             #############################################################
-            #Add in image slider
-
+            # Add in image slider
 
             self.label = QLabel(self)
-            global imagenumber 
+            global imagenumber
             directory = dirname
             imagelist = os.listdir(directory)
-            imagelist.sort(key=lambda fname: int(fname.split('.')[0]))
-            pixmap = QPixmap(directory + '/' + imagelist[imagenumber])
+            imagelist.sort(key=lambda fname: int(fname.split(".")[0]))
+            pixmap = QPixmap(directory + "/" + imagelist[imagenumber])
             self.label.setPixmap(pixmap)
-            #self.resize(pixmap.width(), pixmap.height())            
-            grid.addWidget(self.label,1,1,1,2)
-            #self.resize(pixmap.width() + 500, pixmap.height())
-            pybutton = QPushButton('->', self)
-            pybutton.resize(100,32)      
+            # self.resize(pixmap.width(), pixmap.height())
+            grid.addWidget(self.label, 1, 1, 1, 2)
+            # self.resize(pixmap.width() + 500, pixmap.height())
+            pybutton = QPushButton("->", self)
+            pybutton.resize(100, 32)
             pybutton.clicked.connect(self.keyPressEvent)
-            grid.addWidget(pybutton,2,2,1,1)
-            pybutton2 = QPushButton('<-', self)
-            pybutton2.resize(100,32)      
+            grid.addWidget(pybutton, 2, 2, 1, 1)
+            pybutton2 = QPushButton("<-", self)
+            pybutton2.resize(100, 32)
             pybutton2.clicked.connect(self.keyPressEvent2)
-            grid.addWidget(pybutton2,2,1,1,1)
+            grid.addWidget(pybutton2, 2, 1, 1, 1)
             #############################################################
-            #Add in a Toolbar
-            plotradar = QAction(QIcon('exit24.png'), 'Plot View', self)
+            # Add in a Toolbar
+            plotradar = QAction(QIcon("exit24.png"), "Plot View", self)
             plotradar = QToolButton()
             plotradar.setText("Plot Cells")
             plotradar.pressed.connect(self.plotcells)
             crosssectionAct = QToolButton()
             crosssectionAct.pressed.connect(self.plotpoints)
             crosssectionAct.setText("Choose new cell")
-            self.toolbar = self.addToolBar('Plot View')
+            self.toolbar = self.addToolBar("Plot View")
             self.toolbar.addWidget(plotradar)
             self.toolbar.addWidget(crosssectionAct)
             #############################################################
-            
+
             self.setGeometry(200, 300, 1000, 500)
-            self.setWindowTitle('Simple menu')  
+            self.setWindowTitle("Simple menu")
             self.show()
         else:
-            QMessageBox.about(self,"Warning", "No Date has been selected. Please click Select date first!")
-   
-    
+            QMessageBox.about(
+                self,
+                "Warning",
+                "No Date has been selected. Please click Select date first!",
+            )
+
     def keyPressEvent(self):
         global imagenumber
-        imagenumber=imagenumber+1
+        imagenumber = imagenumber + 1
         directory = dirname
         imagelist = os.listdir(directory)
-        if(imagenumber == len(imagelist)):
+        if imagenumber == len(imagelist):
             imagenumber = 0
-        imagelist.sort(key=lambda fname: int(fname.split('.')[0]))
-        pixmap = QPixmap(directory + '/' + imagelist[imagenumber])
+        imagelist.sort(key=lambda fname: int(fname.split(".")[0]))
+        pixmap = QPixmap(directory + "/" + imagelist[imagenumber])
         self.label.setPixmap(pixmap)
-          
 
-        # self.show()  
+        # self.show()
 
     def keyPressEvent2(self):
         global imagenumber
-        imagenumber=imagenumber-1
+        imagenumber = imagenumber - 1
         directory = dirname
         imagelist = os.listdir(directory)
-        if(imagenumber <0):
-            imagenumber = len(imagelist)-1
-        imagelist.sort(key=lambda fname: int(fname.split('.')[0]))
-        pixmap = QPixmap(directory + '/' + imagelist[imagenumber])
+        if imagenumber < 0:
+            imagenumber = len(imagelist) - 1
+        imagelist.sort(key=lambda fname: int(fname.split(".")[0]))
+        pixmap = QPixmap(directory + "/" + imagelist[imagenumber])
         self.label.setPixmap(pixmap)
-          
 
-        # self.show()  
-            
+        # self.show()
+
     def plotpoints(self):
         global coordsx
         global coordsy
@@ -760,14 +803,12 @@ class Example(QMainWindow):
         coordsy.append(0)
         print(0)
         global ii
-        global jj    
+        global jj
         global filetype
         jj = 0
-        
-        pass
-    
 
-    
+        pass
+
     def plotcells(self):
         global coordsx
         global coordsy
@@ -780,79 +821,79 @@ class Example(QMainWindow):
         for i in range(lenx):
             xcoor = coordsx[i]
             ycoor = coordsy[i]
-            if( xcoor == 0 and ycoor == 0):
-                #now sort them to make sure they are in order
-                newcoordsx, newcoordsy = (list(t) for t in zip(*sorted(zip(newcoordsx, newcoordsy))))
-                self.axes.plot(newcoordsx,newcoordsy)
-                self.axes.scatter(newcoordsx,newcoordsy,marker='X',color='black')
+            if xcoor == 0 and ycoor == 0:
+                # now sort them to make sure they are in order
+                newcoordsx, newcoordsy = (
+                    list(t) for t in zip(*sorted(zip(newcoordsx, newcoordsy)))
+                )
+                self.axes.plot(newcoordsx, newcoordsy)
+                self.axes.scatter(newcoordsx, newcoordsy, marker="X", color="black")
                 newcoordsx = []
                 newcoordsy = []
             else:
                 newcoordsx.append(xcoor)
                 newcoordsy.append(ycoor)
-        #now sort them to make sure they are in order
-        newcoordsx, newcoordsy = (list(t) for t in zip(*sorted(zip(newcoordsx, newcoordsy))))
-        self.axes.plot(newcoordsx,newcoordsy)
-        self.axes.scatter(newcoordsx,newcoordsy,marker='X',color='black')
-        print('Plot is Done')
-        df = pd.DataFrame(list(zip(coordsx,coordsy)),columns=['xcoor','ycoor'])
-        df.to_csv(date + '.csv', encoding='utf-8', index=False)
-        figure.savefig(date + '.png')
+        # now sort them to make sure they are in order
+        newcoordsx, newcoordsy = (
+            list(t) for t in zip(*sorted(zip(newcoordsx, newcoordsy)))
+        )
+        self.axes.plot(newcoordsx, newcoordsy)
+        self.axes.scatter(newcoordsx, newcoordsy, marker="X", color="black")
+        print("Plot is Done")
+        df = pd.DataFrame(list(zip(coordsx, coordsy)), columns=["xcoor", "ycoor"])
+        df.to_csv(date + ".csv", encoding="utf-8", index=False)
+        figure.savefig(date + ".png")
         try:
             shutil.rmtree(templocation)
         except:
             pass
         sys.exit(0)
-            
 
 
 ###############################################################################
 class showimage(QLabel):
-     def __init__(self,imagenumber):
-        super(showimage,self).__init__(parent=None)
+    def __init__(self, imagenumber):
+        super(showimage, self).__init__(parent=None)
         self.mainLayout = QHBoxLayout()
         self.setLayout(self.mainLayout)
         # label = QLabel(self)
-        
-            
+
+
 ###############################################################################
 class mycanvas(FigureCanvas):
     def __init__(self, parent=None):
         figure = matplotlib.figure.Figure()
-        self.axes = figure.add_subplot(111,projection=crs.PlateCarree())
+        self.axes = figure.add_subplot(111, projection=crs.PlateCarree())
         self.axes.set_extent([-78, -68, 40, 45], crs.PlateCarree())
         self.axes.gridlines(color="black", linestyle="dotted")
 
-
-
-        self.canvas=FigureCanvas.__init__(self, figure)
+        self.canvas = FigureCanvas.__init__(self, figure)
         self.setParent(parent)
-        FigureCanvas.setSizePolicy(self,
-                                   QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
+        FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding, QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        self.figure.canvas.mpl_connect('button_press_event', self.onclick)
-        self.figure.suptitle('Radar Returns')
+        self.figure.canvas.mpl_connect("button_press_event", self.onclick)
+        self.figure.suptitle("Radar Returns")
         self.compute_initial_figure()
-
 
     def compute_initial_figure(self):
         pass
 
-        
+
 ###############################################################################
-#Plot on the right will display frame by frame
+# Plot on the right will display frame by frame
+
 
 class static(mycanvas):
     def __init__(self, parent=None):
         mycanvas.__init__(self)
         global ii
-        self.j = 0    
+        self.j = 0
+
     def onclick(self):
         pass
-    
+
     def compute_initial_figure(self):
-               #select the radar site
+        # select the radar site
         global localfiles
         global localfiles2
         global files1
@@ -860,82 +901,98 @@ class static(mycanvas):
         global site
         global ii
         global dirname
-        if(site != 'both'):
-            
-            #get the radar location (this is used to set up the basemap and plotting grid)
+        if site != "both":
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
             loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
+            # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+            lon0 = loc[1]
+            lat0 = loc[0]
+            # lon1 = loc2[1]; lat1 = loc2[0]
         else:
-                        
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
+            loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+            loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+            lon0 = loc[1]
+            lat0 = loc[0]
+            lon1 = loc2[1]
+            lat1 = loc2[0]
+        self.m = Basemap(
+            projection="lcc",
+            lon_0=-73,
+            lat_0=42.5,
+            llcrnrlat=40,
+            llcrnrlon=-78,
+            urcrnrlat=45,
+            urcrnrlon=-68,
+            resolution="l",
+        )
 
         try:
             radar = pyart.io.read_nexrad_archive(localfiles.success[0].filepath)
 
-            #set up the plotting grid for the data
+            # set up the plotting grid for the data
             display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-    
-            
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+            # display2 = pyart.graph.RadarMapDisplay(radar2)
+            x, y = display._get_x_y(0, True, None)
+            # x2,y2 = display2._get_x_y(0,True,None)
+
+            # get the plotting grid into lat/lon coordinates
+            x0, y0 = self.m(lon0, lat0)
+            # x1,y1 = self.m(lon1,lat1)
+            glons, glats = self.m((x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True)
+            # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+            # read in the lowest scan angle reflectivity field in the NEXRAD file
+            refl = np.squeeze(radar.get_field(sweep=0, field_name="reflectivity"))
+            # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
             del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
+            # del radar2
+            # set up the plotting parameters (NWSReflectivity colormap, contour levels,
             # and colorbar tick labels)
-            cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
+            cmap = "pyart_NWSRef"
+            levs = np.linspace(0, 80, 41, endpoint=True)
+            ticks = np.linspace(0, 80, 9, endpoint=True)
+            label = "Radar Reflectivity Factor ($\mathsf{dBZ}$)"
+            # define the plot axis to the be axis defined above
+            self.norm = mpl.colors.BoundaryNorm(levs, 256)
+            # create a colormesh of the reflectivity using with the plot settings defined above
+            p1 = self.axes.pcolormesh(
+                glons,
+                glats,
+                refl,
+                norm=self.norm,
+                cmap=cmap,
+                transform=crs.LambertConformal(),
+            )
             self.figure.canvas.draw_idle()
 
         except ValueError:
             pass
 
-        if(site != 'both'):
+        if site != "both":
             index = len(files1)
         else:
             index = len(files1)
         while ii < index:
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[ii][-6:-5]
                 check2 = files1[ii][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[ii][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[ii][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-10:-7]
@@ -943,37 +1000,55 @@ class static(mycanvas):
                     timme = files1[ii][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[ii])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-                    del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
 
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
-                    name =  str(ii) + '.png'
-                    self.figure.savefig(dirname + '/' + name)
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
+                    name = str(ii) + ".png"
+                    self.figure.savefig(dirname + "/" + name)
                     self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
@@ -983,23 +1058,25 @@ class static(mycanvas):
                     ii = ii + 1
                     pass
             else:
-                        
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[ii][-6:-5]
                 check2 = files1[ii][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[ii][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[ii][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-10:-7]
@@ -1007,89 +1084,128 @@ class static(mycanvas):
                     timme = files1[ii][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[ii])
                     radar2 = pyart.io.read_nexrad_archive(files2[ii])
-               
-                    #set up the plotting grid for the data
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
-                    name = str(ii) + '.png'
-                    self.figure.savefig(dirname + '/' + name)
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
+                    name = str(ii) + ".png"
+                    self.figure.savefig(dirname + "/" + name)
                     self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
-                    print('Value')
+                    print("Value")
                     pass
                 except:
-                    print('other')
+                    print("other")
                     ii = ii + 1
                     pass
-        
-            
+
+
 class static2(mycanvas):
     def __init__(self, parent=None):
         mycanvas.__init__(self)
         global jj
         self.j = 0
+
     def compute_initial_figure(self):
-        #select the radar site
+        # select the radar site
         global localfiles
         global localfiles2
         global files1
         global files2
         global site
         global jj
-        if(site != 'both'):
-            
-            #get the radar location (this is used to set up the basemap and plotting grid)
+        if site != "both":
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
             loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
+            # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+            lon0 = loc[1]
+            lat0 = loc[0]
+            # lon1 = loc2[1]; lat1 = loc2[0]
         else:
-                        
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
-            
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
+            loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+            loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+            lon0 = loc[1]
+            lat0 = loc[0]
+            # lon1 = loc2[1]; lat1 = loc2[0]
+
+        self.m = Basemap(
+            projection="lcc",
+            lon_0=-73,
+            lat_0=42.5,
+            llcrnrlat=40,
+            llcrnrlon=-78,
+            urcrnrlat=45,
+            urcrnrlon=-68,
+            resolution="l",
+        )
         check = files1[jj][-6:-5]
-        check2 = files1[jj][-3:-2]        
-        if(check == 'V'):
+        check2 = files1[jj][-3:-2]
+        if check == "V":
             timme = files1[jj][-13:-7]
             timelabel = timme[0:6]
             time1 = files1[jj][-13:-10]
-            #time2 = localfiles2.success[self.j].filepath[-13:-10]
-        elif(check2 == 'V'):
+            # time2 = localfiles2.success[self.j].filepath[-13:-10]
+        elif check2 == "V":
             timme = files1[jj][-10:-4]
             timelabel = timme[0:6]
             time1 = files1[jj][-10:-7]
@@ -1098,47 +1214,63 @@ class static2(mycanvas):
             timelabel = timme[0:6]
             time1 = files1[jj][-9:-6]
         try:
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            radar = pyart.io.read_nexrad_archive(files1[jj])   
-            #set up the plotting grid for the data
+            levs = np.linspace(0, 80, 41, endpoint=True)
+            ticks = np.linspace(0, 80, 9, endpoint=True)
+            # define the plot axis to the be axis defined above
+            self.norm = mpl.colors.BoundaryNorm(levs, 256)
+            radar = pyart.io.read_nexrad_archive(files1[jj])
+            # set up the plotting grid for the data
             display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+            # display2 = pyart.graph.RadarMapDisplay(radar2)
+            x, y = display._get_x_y(0, True, None)
+            # get the plotting grid into lat/lon coordinates
+            x0, y0 = self.m(lon0, lat0)
+            # x1,y1 = self.m(lon1,lat1)
+            glons, glats = self.m((x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True)
+            # read in the lowest scan angle reflectivity field in the NEXRAD file
+            refl = np.squeeze(radar.get_field(sweep=0, field_name="reflectivity"))
+            # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
             del radar
-            cmap = 'pyart_NWSRef'
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                #If the try for files says there aren't any files found, then we skip
+            cmap = "pyart_NWSRef"
+            # create a colormesh of the reflectivity using with the plot settings defined above
+            self.axes.pcolormesh(
+                glons,
+                glats,
+                refl,
+                norm=self.norm,
+                cmap=cmap,
+                transform=crs.LambertConformal(),
+            )
+            self.figure.suptitle(
+                "Time = "
+                + timelabel[0:2]
+                + ":"
+                + timelabel[2:4]
+                + ":"
+                + timelabel[4:6]
+                + " z"
+            )
+            # If the try for files says there aren't any files found, then we skip
             self.figure.canvas.draw_idle()
-            
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1146,56 +1278,76 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-                    del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
 
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
                 except:
                     pass
             else:
-                        
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1203,53 +1355,80 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
                     radar2 = pyart.io.read_nexrad_archive(files2[jj])
-               
-                    #set up the plotting grid for the data
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
                     self.figure.canvas.draw_idle()
                 except:
                     pass
-                
 
         except ValueError:
             pass
 
-    def onclick(self,event):
+    def onclick(self, event):
         global jj
         global files1
         global files2
-        if(jj != 0):
+        if jj != 0:
             ix, iy = event.xdata, event.ydata
-            #ix,iy = crs.LambertConformal.transform_point(ix,iy,crs.PlateCarree)
-            print ('x = %f, y = %f'%(
-                ix, iy))
-        
+            # ix,iy = crs.LambertConformal.transform_point(ix,iy,crs.PlateCarree)
+            print("x = %f, y = %f" % (ix, iy))
+
             global coordsx
             global coordsy
             global testing
@@ -1259,30 +1438,31 @@ class static2(mycanvas):
             global localfiles
             global localfiles2
             global site
-            #site = 'KBOX'
-            #site2 = 'KENX'
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            # site = 'KBOX'
+            # site2 = 'KENX'
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1290,64 +1470,85 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
 
-                    #set up the plotting grid for the data
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
+                    # x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
 
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
             else:
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1355,78 +1556,108 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
                     radar2 = pyart.io.read_nexrad_archive(files2[jj])
-               
-                    #set up the plotting grid for the data
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+                    # ax = plt.axes(projection=crs.PlateCarree())
+                    # states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
+                    # self.axes.add_feature(states,linewidth=1.,edgecolor="black")
+                    # self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
         else:
             global localfiles
             global localfiles2
-            #site = 'KBOX'
-            #site2 = 'KENX'
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            # site = 'KBOX'
+            # site2 = 'KENX'
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1434,78 +1665,99 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
+                    # x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+                    # ax = plt.axes(projection=crs.PlateCarree())
+                    # states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
+                    # self.axes.add_feature(states,linewidth=1.,edgecolor="black")
+                    # self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
 
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    # p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
+                    # p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
             else:
-                        
-                    #site = 'KBOX'
-                #site2 = 'KENX'
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                # site = 'KBOX'
+                # site2 = 'KENX'
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1513,90 +1765,117 @@ class static2(mycanvas):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
                     radar2 = pyart.io.read_nexrad_archive(files2[jj])
-               
-                    #set up the plotting grid for the data
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+                    # ax = plt.axes(projection=crs.PlateCarree())
+                    # states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
+                    # self.axes.add_feature(states,linewidth=1.,edgecolor="black")
+                    # self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
-            
+
 
 ###############################################################################
 ###############################################################################
 class mycanvas2(FigureCanvas):
     def __init__(self, parent=None):
         figure = matplotlib.figure.Figure()
-        self.axes = figure.add_subplot(111,projection=crs.PlateCarree())
+        self.axes = figure.add_subplot(111, projection=crs.PlateCarree())
         self.axes.set_extent([-78, -68, 40, 45], crs.PlateCarree())
 
         self.axes.gridlines(color="black", linestyle="dotted")
 
-
-
-        self.canvas=FigureCanvas.__init__(self, figure)
+        self.canvas = FigureCanvas.__init__(self, figure)
         self.setParent(parent)
-        FigureCanvas.setSizePolicy(self,
-                                   QSizePolicy.Expanding,
-                                   QSizePolicy.Expanding)
+        FigureCanvas.setSizePolicy(self, QSizePolicy.Expanding, QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
-        self.figure.canvas.mpl_connect('button_press_event', self.onclick)
-        self.figure.suptitle('Radar Returns')
+        self.figure.canvas.mpl_connect("button_press_event", self.onclick)
+        self.figure.suptitle("Radar Returns")
         self.compute_initial_figure()
-                       #select the radar site
+        # select the radar site
 
     def compute_initial_figure(self):
         pass
-        
+
+
 ###############################################################################
-#Plot on the right will display frame by frame
+# Plot on the right will display frame by frame
+
 
 class static12(mycanvas2):
     def __init__(self, parent=None):
         mycanvas2.__init__(self)
         global ii
         self.j = 0
-    
+
     def compute_initial_figure(self):
-               #select the radar site
+        # select the radar site
         global localfiles
         global localfiles2
         global files1
@@ -1606,92 +1885,108 @@ class static12(mycanvas2):
         global filedir
         global filedir2
         global dirname
-        #site = 'KBOX'
-        #site2 = 'KENX'
-        if(site != 'both'):
-            
-            #get the radar location (this is used to set up the basemap and plotting grid)
+        # site = 'KBOX'
+        # site2 = 'KENX'
+        if site != "both":
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
             loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
+            # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+            lon0 = loc[1]
+            lat0 = loc[0]
+            # lon1 = loc2[1]; lat1 = loc2[0]
         else:
-                        
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
-            
-        #use boto to connect to the AWS nexrad holdings directory
-        #ax = self.figure.add_subplot(111)
-                        #set up a basemap with a lambert conformal projection centered 
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
+            loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+            loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+            lon0 = loc[1]
+            lat0 = loc[0]
+            lon1 = loc2[1]
+            lat1 = loc2[0]
+
+        # use boto to connect to the AWS nexrad holdings directory
+        # ax = self.figure.add_subplot(111)
+        # set up a basemap with a lambert conformal projection centered
         # on the radar location, extending 1 degree in the meridional direction
-        # and 1.5 degrees in the longitudinal in each direction away from the 
+        # and 1.5 degrees in the longitudinal in each direction away from the
         # center point.
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
+        self.m = Basemap(
+            projection="lcc",
+            lon_0=-73,
+            lat_0=42.5,
+            llcrnrlat=40,
+            llcrnrlon=-78,
+            urcrnrlat=45,
+            urcrnrlon=-68,
+            resolution="l",
+        )
 
         try:
-            radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[0])
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
-            #set up the plotting grid for the data
-            display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-    
-            
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-            del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
-            # and colorbar tick labels)
-            cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
+            radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[0])
+            # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
 
-                #If the try for files says there aren't any files found, then we skip
+            # set up the plotting grid for the data
+            display = pyart.graph.RadarMapDisplay(radar)
+            # display2 = pyart.graph.RadarMapDisplay(radar2)
+            x, y = display._get_x_y(0, True, None)
+            # x2,y2 = display2._get_x_y(0,True,None)
+
+            # get the plotting grid into lat/lon coordinates
+            x0, y0 = self.m(lon0, lat0)
+            # x1,y1 = self.m(lon1,lat1)
+            glons, glats = self.m((x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True)
+            # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+            # read in the lowest scan angle reflectivity field in the NEXRAD file
+            refl = np.squeeze(radar.get_field(sweep=0, field_name="reflectivity"))
+            # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+            del radar
+            # del radar2
+            # set up the plotting parameters (NWSReflectivity colormap, contour levels,
+            # and colorbar tick labels)
+            cmap = "pyart_NWSRef"
+            levs = np.linspace(0, 80, 41, endpoint=True)
+            ticks = np.linspace(0, 80, 9, endpoint=True)
+            label = "Radar Reflectivity Factor ($\mathsf{dBZ}$)"
+            # define the plot axis to the be axis defined above
+            self.norm = mpl.colors.BoundaryNorm(levs, 256)
+            # create a colormesh of the reflectivity using with the plot settings defined above
+            p1 = self.axes.pcolormesh(
+                glons,
+                glats,
+                refl,
+                norm=self.norm,
+                cmap=cmap,
+                transform=crs.LambertConformal(),
+            )
+
+            # If the try for files says there aren't any files found, then we skip
         except ValueError:
             pass
 
-        if(site != 'both'):
+        if site != "both":
             index = len(files1)
         else:
             index = len(files1)
         while ii < index:
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[ii][-6:-5]
                 check2 = files1[ii][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[ii][-6:-1]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[ii][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-10:-7]
@@ -1699,41 +1994,59 @@ class static12(mycanvas2):
                     timme = files1[ii][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[ii])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[ii])
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
+                    # x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+                    # ax = plt.axes(projection=crs.PlateCarree())
+                    # states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
+                    # self.axes.add_feature(states,linewidth=1.,edgecolor="black")
+                    # self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
-                    name =  str(ii) + '.png'
-                    self.figure.savefig(dirname + '/' + name)
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
+                    name = str(ii) + ".png"
+                    self.figure.savefig(dirname + "/" + name)
                     self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
@@ -1743,21 +2056,23 @@ class static12(mycanvas2):
                     ii = ii + 1
                     pass
             else:
-                        
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
 
                 check = files1[ii][-6:-5]
                 check2 = files1[ii][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[ii][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[ii][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-10:-7]
@@ -1765,59 +2080,90 @@ class static12(mycanvas2):
                     timme = files1[ii][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[ii][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[ii])
-                    radar2 = pyart.io.read_nexrad_archive(filedir2 + '/' + files2[ii])
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[ii])
+                    radar2 = pyart.io.read_nexrad_archive(filedir2 + "/" + files2[ii])
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
-                    name = str(ii) + '.png'
-                    self.figure.savefig(dirname + '/' + name)
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
+                    name = str(ii) + ".png"
+                    self.figure.savefig(dirname + "/" + name)
                     self.figure.canvas.draw_idle()
                     ii = ii + 1
                 except ValueError:
                     ii = ii + 1
-                    print('Value')
+                    print("Value")
                     pass
                 except:
-                    print('other')
+                    print("other")
                     ii = ii + 1
                     pass
-    def onclick(self,event):
-        pass               
-                    
-            
+
+    def onclick(self, event):
+        pass
+
+
 class static22(mycanvas2):
     def __init__(self, parent=None):
         mycanvas2.__init__(self)
         global jj
         self.j = 0
+
     def compute_initial_figure(self):
-               #select the radar site
+        # select the radar site
         global localfiles
         global localfiles2
         global files1
@@ -1826,82 +2172,99 @@ class static22(mycanvas2):
         global jj
         global filedir
         global filedir2
-        #site = 'KBOX'
-        #site2 = 'KENX'
-        if(site != 'both'):
-            
-            #get the radar location (this is used to set up the basemap and plotting grid)
+        # site = 'KBOX'
+        # site2 = 'KENX'
+        if site != "both":
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
             loc = pyart.io.nexrad_common.get_nexrad_location(site)
-            #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-            lon0 = loc[1] ; lat0 = loc[0]
-            #lon1 = loc2[1]; lat1 = loc2[0]
+            # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+            lon0 = loc[1]
+            lat0 = loc[0]
+            # lon1 = loc2[1]; lat1 = loc2[0]
         else:
-                        
-            #get the radar location (this is used to set up the basemap and plotting grid)
-            loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-            loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-            lon0 = loc[1] ; lat0 = loc[0]
-            lon1 = loc2[1]; lat1 = loc2[0]
-            
-        #use boto to connect to the AWS nexrad holdings directory
-        #ax = self.figure.add_subplot(111)
-                        #set up a basemap with a lambert conformal projection centered 
+
+            # get the radar location (this is used to set up the basemap and plotting grid)
+            loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+            loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+            lon0 = loc[1]
+            lat0 = loc[0]
+            lon1 = loc2[1]
+            lat1 = loc2[0]
+
+        # use boto to connect to the AWS nexrad holdings directory
+        # ax = self.figure.add_subplot(111)
+        # set up a basemap with a lambert conformal projection centered
         # on the radar location, extending 1 degree in the meridional direction
-        # and 1.5 degrees in the longitudinal in each direction away from the 
+        # and 1.5 degrees in the longitudinal in each direction away from the
         # center point.
-        self.m = Basemap(projection='lcc',lon_0=-73,lat_0=42.5,
-                  llcrnrlat=40,llcrnrlon=-78,
-                  urcrnrlat=45,urcrnrlon=-68,resolution='l')
-        
-           
-        #Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
+        self.m = Basemap(
+            projection="lcc",
+            lon_0=-73,
+            lat_0=42.5,
+            llcrnrlat=40,
+            llcrnrlon=-78,
+            urcrnrlat=45,
+            urcrnrlon=-68,
+            resolution="l",
+        )
+
+        # Take the first file that we gathered to plot (filenames are stored in the dictionary localfiles.success)
         try:
-            radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[0])
-            #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
-   
-            #set up the plotting grid for the data
+            radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[0])
+            # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[0].filepath)
+
+            # set up the plotting grid for the data
             display = pyart.graph.RadarMapDisplay(radar)
-            #display2 = pyart.graph.RadarMapDisplay(radar2)
-            x,y = display._get_x_y(0,True,None)
-            #x2,y2 = display2._get_x_y(0,True,None)
-            
-            #get the plotting grid into lat/lon coordinates
-            x0,y0 = self.m(lon0,lat0)
-            #x1,y1 = self.m(lon1,lat1)
-            glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-            #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-            #read in the lowest scan angle reflectivity field in the NEXRAD file 
-            refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-            #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+            # display2 = pyart.graph.RadarMapDisplay(radar2)
+            x, y = display._get_x_y(0, True, None)
+            # x2,y2 = display2._get_x_y(0,True,None)
+
+            # get the plotting grid into lat/lon coordinates
+            x0, y0 = self.m(lon0, lat0)
+            # x1,y1 = self.m(lon1,lat1)
+            glons, glats = self.m((x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True)
+            # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+            # read in the lowest scan angle reflectivity field in the NEXRAD file
+            refl = np.squeeze(radar.get_field(sweep=0, field_name="reflectivity"))
+            # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
             del radar
-            #del radar2
-            #set up the plotting parameters (NWSReflectivity colormap, contour levels,
+            # del radar2
+            # set up the plotting parameters (NWSReflectivity colormap, contour levels,
             # and colorbar tick labels)
-            cmap = 'pyart_NWSRef'
-            levs = np.linspace(0,80,41,endpoint=True)
-            ticks = np.linspace(0,80,9,endpoint=True)
-            label = 'Radar Reflectivity Factor ($\mathsf{dBZ}$)'
-            #define the plot axis to the be axis defined above
-            self.norm = mpl.colors.BoundaryNorm(levs,256)
-            #create a colormesh of the reflectivity using with the plot settings defined above
-            p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.LambertConformal())
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            cmap = "pyart_NWSRef"
+            levs = np.linspace(0, 80, 41, endpoint=True)
+            ticks = np.linspace(0, 80, 9, endpoint=True)
+            label = "Radar Reflectivity Factor ($\mathsf{dBZ}$)"
+            # define the plot axis to the be axis defined above
+            self.norm = mpl.colors.BoundaryNorm(levs, 256)
+            # create a colormesh of the reflectivity using with the plot settings defined above
+            p1 = self.axes.pcolormesh(
+                glons,
+                glats,
+                refl,
+                norm=self.norm,
+                cmap=cmap,
+                transform=crs.LambertConformal(),
+            )
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1909,56 +2272,76 @@ class static22(mycanvas2):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
-                    del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
 
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    del radar
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
                 except:
                     pass
             else:
-                        
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -1966,53 +2349,80 @@ class static22(mycanvas2):
                     timme = files1[jj][-9:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-9:-6]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
                     radar = pyart.io.read_nexrad_archive(files1[jj])
                     radar2 = pyart.io.read_nexrad_archive(files2[jj])
-               
-                    #set up the plotting grid for the data
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
                     self.figure.canvas.draw_idle()
                 except:
                     pass
-                
 
         except ValueError:
             pass
 
-    def onclick(self,event):
+    def onclick(self, event):
         global jj
         global files1
         global files2
-        if(jj != 0):
+        if jj != 0:
             ix, iy = event.xdata, event.ydata
-            #ix,iy = crs.LambertConformal.transform_point(ix,iy,crs.PlateCarree)
-            print ('x = %f, y = %f'%(
-                ix, iy))
-        
+            # ix,iy = crs.LambertConformal.transform_point(ix,iy,crs.PlateCarree)
+            print("x = %f, y = %f" % (ix, iy))
+
             global coordsx
             global coordsy
             global testing
@@ -2026,30 +2436,31 @@ class static22(mycanvas2):
             global site
             global filedir
             global filedir2
-            #site = 'KBOX'
-            #site2 = 'KENX'
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            # site = 'KBOX'
+            # site2 = 'KENX'
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -2057,72 +2468,93 @@ class static22(mycanvas2):
                     timme = files1[jj][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
-                    #radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[jj])
+                    # radar2 = pyart.io.read_nexrad_archive(localfiles2.success[self.j].filepath)
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    #display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    #x2,y2 = display2._get_x_y(0,True,None)
+                    # display2 = pyart.graph.RadarMapDisplay(radar2)
+                    x, y = display._get_x_y(0, True, None)
+                    # x2,y2 = display2._get_x_y(0,True,None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
 
                     self.axes.gridlines(color="black", linestyle="dotted")
 
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    #x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    # x1,y1 = self.m(lon1,lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    #self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    # self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
             else:
-                        
-                    #site = 'KBOX'
-                #site2 = 'KENX'
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+
+                # site = 'KBOX'
+                # site2 = 'KENX'
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
-                #if(self.j == len(localfiles2.success)):
-                    #self.j = self.j - 1
+                # if(self.j == len(localfiles2.success)):
+                # self.j = self.j - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                    #time2 = localfiles2.success[self.j].filepath[-13:-10]
-                elif(check2 == 'V'):
+                    # time2 = localfiles2.success[self.j].filepath[-13:-10]
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -2130,79 +2562,109 @@ class static22(mycanvas2):
                     timme = files1[jj][-6:]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-6:-3]
-                    #time2 = localfiles2.success[self.j].filepath[-9:-6]
+                    # time2 = localfiles2.success[self.j].filepath[-9:-6]
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
-                    radar2 = pyart.io.read_nexrad_archive(filedir2 + '/' + files2[jj])
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[jj])
+                    radar2 = pyart.io.read_nexrad_archive(filedir2 + "/" + files2[jj])
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
-                    #ax = plt.axes(projection=crs.PlateCarree())
-                    #states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
-                    #self.axes.add_feature(states,linewidth=1.,edgecolor="black")
-                    #self.axes.coastlines('50m',linewidth=0.8)
+                    # ax = plt.axes(projection=crs.PlateCarree())
+                    # states = NaturalEarthFeature(category = 'cultural', scale = '50m', facecolor = 'none',name = 'admin_1_states_provinces_shp')
+                    # self.axes.add_feature(states,linewidth=1.,edgecolor="black")
+                    # self.axes.coastlines('50m',linewidth=0.8)
                     self.axes.gridlines(color="black", linestyle="dotted")
-            
-                    
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
+                    cmap = "pyart_NWSRef"
 
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
         else:
             global dirname
             global localfiles
             global localfiles2
-            #site = 'KBOX'
-            #site2 = 'KENX'
-            if(site != 'both'):
-        
-                #get the radar location (this is used to set up the basemap and plotting grid)
+            # site = 'KBOX'
+            # site2 = 'KENX'
+            if site != "both":
+
+                # get the radar location (this is used to set up the basemap and plotting grid)
                 loc = pyart.io.nexrad_common.get_nexrad_location(site)
-                #loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
-                lon0 = loc[1] ; lat0 = loc[0]
-                #lon1 = loc2[1]; lat1 = loc2[0]
+                # loc2 = pyart.io.nexrad_common.get_nexrad_location(site2)
+                lon0 = loc[1]
+                lat0 = loc[0]
+                # lon1 = loc2[1]; lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
 
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
 
-                elif(check2 == 'V'):
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -2212,55 +2674,76 @@ class static22(mycanvas2):
                     time1 = files1[jj][-6:-3]
 
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[jj])
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
-                    x,y = display._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
 
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    #refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    # refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
                     del radar
-                    #del radar2
-                    cmap = 'pyart_NWSRef'
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
+                    # del radar2
+                    cmap = "pyart_NWSRef"
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
             else:
-                #get the radar location (this is used to set up the basemap and plotting grid)
-                loc = pyart.io.nexrad_common.get_nexrad_location('KBOX')
-                loc2 = pyart.io.nexrad_common.get_nexrad_location('KENX')
-                lon0 = loc[1] ; lat0 = loc[0]
-                lon1 = loc2[1]; lat1 = loc2[0]
+                # get the radar location (this is used to set up the basemap and plotting grid)
+                loc = pyart.io.nexrad_common.get_nexrad_location("KBOX")
+                loc2 = pyart.io.nexrad_common.get_nexrad_location("KENX")
+                lon0 = loc[1]
+                lat0 = loc[0]
+                lon1 = loc2[1]
+                lat1 = loc2[0]
                 self.axes.clear()
                 jj = jj + 1
                 self.j = self.j + 1
-                if(jj == len(files1)):
+                if jj == len(files1):
                     jj = jj - 1
                 check = files1[jj][-6:-5]
                 check2 = files1[jj][-3:-2]
-                if(check == 'V'):
+                if check == "V":
                     timme = files1[jj][-13:-7]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-13:-10]
-                elif(check2 == 'V'):
+                elif check2 == "V":
                     timme = files1[jj][-10:-4]
                     timelabel = timme[0:6]
                     time1 = files1[jj][-10:-7]
@@ -2269,54 +2752,84 @@ class static22(mycanvas2):
                     timelabel = timme[0:6]
                     time1 = files1[jj][-6:-3]
                 try:
-                    radar = pyart.io.read_nexrad_archive(filedir + '/' + files1[jj])
-                    radar2 = pyart.io.read_nexrad_archive(filedir2 + '/' + files2[jj])
-               
-                    #set up the plotting grid for the data
+                    radar = pyart.io.read_nexrad_archive(filedir + "/" + files1[jj])
+                    radar2 = pyart.io.read_nexrad_archive(filedir2 + "/" + files2[jj])
+
+                    # set up the plotting grid for the data
                     display = pyart.graph.RadarMapDisplay(radar)
                     display2 = pyart.graph.RadarMapDisplay(radar2)
-                    x,y = display._get_x_y(0,True,None)
-                    x2,y2 = display2._get_x_y(0,True,None)
+                    x, y = display._get_x_y(0, True, None)
+                    x2, y2 = display2._get_x_y(0, True, None)
                     self.axes.set_extent([-78, -68, 40, 45], crs.Geodetic())
                     self.axes.gridlines(color="black", linestyle="dotted")
-                    #get the plotting grid into lat/lon coordinates
-                    x0,y0 = self.m(lon0,lat0)
-                    x1,y1 = self.m(lon1,lat1)
-                    glons,glats = self.m((x0+x*1000.), (y0+y*1000.),inverse=True)
-                    glons2,glats2 = self.m((x1+x2*1000.), (y1+y2*1000.),inverse=True)
-                    #read in the lowest scan angle reflectivity field in the NEXRAD file 
-                    refl = np.squeeze(radar.get_field(sweep=0,field_name='reflectivity'))
-                    refl2 = np.squeeze(radar2.get_field(sweep=0,field_name='reflectivity'))
+                    # get the plotting grid into lat/lon coordinates
+                    x0, y0 = self.m(lon0, lat0)
+                    x1, y1 = self.m(lon1, lat1)
+                    glons, glats = self.m(
+                        (x0 + x * 1000.0), (y0 + y * 1000.0), inverse=True
+                    )
+                    glons2, glats2 = self.m(
+                        (x1 + x2 * 1000.0), (y1 + y2 * 1000.0), inverse=True
+                    )
+                    # read in the lowest scan angle reflectivity field in the NEXRAD file
+                    refl = np.squeeze(
+                        radar.get_field(sweep=0, field_name="reflectivity")
+                    )
+                    refl2 = np.squeeze(
+                        radar2.get_field(sweep=0, field_name="reflectivity")
+                    )
                     del radar
                     del radar2
-                    cmap = 'pyart_NWSRef'
-                    #create a colormesh of the reflectivity using with the plot settings defined above
-                    #p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    #p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
-                    p1 = self.axes.pcolormesh(glons,glats,refl,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.axes.pcolormesh(glons2,glats2,refl2,norm=self.norm,cmap=cmap,transform=crs.PlateCarree())
-                    self.figure.suptitle('Time = ' + timelabel[0:2] + ':' + timelabel[2:4] + ':' + timelabel[4:6] + ' z')
-                    #add the colorbar axes and create the colorbar based on the settings above
+                    cmap = "pyart_NWSRef"
+                    # create a colormesh of the reflectivity using with the plot settings defined above
+                    # p1 = m.pcolormesh(glons,glats,refl,norm=norm,cmap=cmap,ax=ax,latlon=True)
+                    # p2 = m.pcolormesh(glons2,glats2,refl2,norm=norm,cmap=cmap,ax=ax,latlon=True)
+                    p1 = self.axes.pcolormesh(
+                        glons,
+                        glats,
+                        refl,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.axes.pcolormesh(
+                        glons2,
+                        glats2,
+                        refl2,
+                        norm=self.norm,
+                        cmap=cmap,
+                        transform=crs.PlateCarree(),
+                    )
+                    self.figure.suptitle(
+                        "Time = "
+                        + timelabel[0:2]
+                        + ":"
+                        + timelabel[2:4]
+                        + ":"
+                        + timelabel[4:6]
+                        + " z"
+                    )
+                    # add the colorbar axes and create the colorbar based on the settings above
                     self.figure.canvas.draw_idle()
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                 except ValueError:
-                    if(jj == len(files1)-1):
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
                 except:
-        
-                    if(jj == len(files1)-1):
+
+                    if jj == len(files1) - 1:
                         jj = 0
                     pass
-            
+
 
 ###############################################################################
 
 ###############################################################################
-      
-if __name__ == '__main__':
-    
+
+if __name__ == "__main__":
+
     app = QApplication(sys.argv)
     ex = Example()
     sys.exit(app.exec_())
